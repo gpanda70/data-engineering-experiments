@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Specify the Docker image you want to check and possibly pull
+# Specify the neo4j image you want to check and possibly pull
 IMAGE_NAME="neo4j:5.13.0-enterprise"
 
 # Check if the Docker image exists locally

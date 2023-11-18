@@ -1,4 +1,4 @@
 # data-engineering-experiments
 My data engineering playground :)
 
-I experiment with different open-source infrastructure using docker/docker-compose.
+I experiment with different data infrastructure and patterns. 

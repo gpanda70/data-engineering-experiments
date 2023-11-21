@@ -39,7 +39,7 @@ Reserved memory is used to prevent OOM issues.
 
 **Transformation:** Operations like filter, select, join, groupBy. Can be split into narrow or wide(shuffle)
 
-**Action:** Operations like save, load, show, count. This will actually start the execution. It will take the transformations
+**Action:** Operations like save, show, count. This will actually start the execution. It will take the transformations
 and create a Optimized DAG (Physical plan)
 
 **Logical Plan:** Each transformation builds upon a logical plan, a tree of logical operations and high level abstraction
@@ -48,10 +48,12 @@ of what the user wants to do. After the plan is constructed the catalyst optimiz
 **Physical Plan:** How the logical plan will be executed in the cluster. Represented as a DAG. Driver will break it down into 
 one or more jobs. 
 
-**Job:** Triggered by an action, this represents the entire computation required to produce results for an action.
+**Job:** Triggered by an action, this represents the entire computation required to produce results for an action. A job
+consists of 1 or more stages.
 
-**Stage:** Set of tasks that can be executed in parallel, shuffles mark the boundary of an individual stage. 
-Each stage contains a sequence of transformations that can be completed without shuffling.
+**Stage:** 
+Each stage contains a sequence of transformations that can be completed without shuffling, shuffles mark the boundary of 
+an individual stage. A stage has multiple tasks that can be executed in parallel
 
 **Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition.
 

@@ -40,10 +40,14 @@ Reserved memory is used to prevent OOM issues.
 
 ![img_1.png](Job_Stage_Task.png)
 
-**Transformation:** Operations like filter, select, join, groupBy. Can be split into narrow or wide(shuffle)
+**Transformation:** Operations like filter, select, join, groupBy.
+* Narrow Transformations: Transformations that each input partition contributes to only one output partition. Generally more efficient and faster.
+* Wide Transformations: Transformations where input data from multiple partitions may be combined to produce each output partition. This means they require
+a shuffle, which involves disk I/O, network I/O, and serialization/deserialization of the data.
 
-**Action:** Operations like save, show, count. This will actually start the execution. It will take the transformations
-and create an optimized DAG (Physical plan)
+**Action:** Operations like save, show, and count. Once an action is invoked, Spark will take transformations to create an optimized 
+Directed Acyclic Graph (DAG). This DAG is then divided into multiple Jobs, Stages, and Tasks. 
+The code is executed accordingly, with the result either being returned to the Driver or written to disk.
 
 **Logical Plan:** Each transformation builds upon a logical plan, a tree of logical operations and high level abstraction
 of what the user wants to do. After the plan is constructed the catalyst optimizer creates logical optimized plan

@@ -10,14 +10,17 @@ Transformations occur in-memory, making it faster than MapReduce.
 
 ## High-Level Architecture
 
-### Physical
+### Cluster
 ![spark physical architecture.svg](spark%20physical%20architecture.svg)
 
-**Driver:** This is the leader node. You can think of it as the entrypoint to the rest of the spark system.
+**Driver:** This is the leader node. It is the entrypoint to the rest of the spark system, and also assigns tasks to Executors
 
-**Cluster manager:** Allocates resources to the executors.
+**Cluster manager:** It allocates resources to the worker nodes. The types of managers are standalone, Mesos, Yarn, K8s
 
-**Executor:** These are the worker nodes that will perform the unit of work known as **tasks**, that are sent from the Driver.
+**Worker Node:** Physical or Virtual machine in the cluster. 
+It's primary role is to provide the environment and resource(CPU, memory, storage) for executors to run.
+
+**Executor:** JVM process launched for spark application. It's primary role is to execute tasks from the Driver.
 
 **Slots:** Fancy name for cores on the executor. Typically 1 slot<--->1 task<--->1 partition. 
 So If I have 4 executors with 4 slots, I can run 16 tasks in parallel
@@ -50,8 +53,7 @@ The driver will break it down into one or more jobs.
 
 **Job:** Represents the entire computation required to produce results for an action. A job consists of 1 or more stages.
 
-**Stage:** 
-Each stage contains a sequence of transformations that can be completed without shuffling, shuffles mark the boundary of 
+**Stage:** Each stage contains a sequence of transformations that can be completed without shuffling, shuffles mark the boundary of 
 an individual stage. A stage has multiple tasks that can be executed in parallel
 
 **Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition.

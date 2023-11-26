@@ -13,9 +13,9 @@ Transformations occur in-memory, making it faster than MapReduce.
 ### Cluster
 ![spark physical architecture.svg](spark%20physical%20architecture.svg)
 
-**Driver:** The entrypoint to the cluster that assigns tasks to Executors
+**Driver:** The entrypoint to the cluster that does the following: converts spark code to tasks, assigns tasks to Executors, handles task failures, and returns result to client. 
 
-**Cluster manager:** It allocates resources(CPU, memory, storage) to the worker nodes. The types of managers are standalone, Mesos, Yarn, K8s
+**Cluster manager:** It allocates resources(CPU, memory, storage) to the worker nodes and driver node. The types of managers are standalone, Mesos, Yarn, K8s
 
 **Worker Node:** Physical or Virtual machine in the cluster. 
 It's primary role is to provide the environment and resource(CPU, memory, storage) for executors to run.

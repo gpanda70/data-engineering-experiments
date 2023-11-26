@@ -2,7 +2,7 @@
 Spark is a unified library for large-scale distributed data processing.
 
 ## Why is it special?
-It is a unified library that supports batch processing, stream processing, machine learning, graph algorithms, 
+Spark supports batch processing, stream processing, machine learning, graph algorithms, 
 SQL, etc...
 
 Transformations occur in-memory, making it faster than MapReduce.
@@ -13,16 +13,16 @@ Transformations occur in-memory, making it faster than MapReduce.
 ### Cluster
 ![spark physical architecture.svg](spark%20physical%20architecture.svg)
 
-**Driver:** This is the leader node. It is the entrypoint to the rest of the spark system, and also assigns tasks to Executors
+**Driver:** The entrypoint to the cluster that assigns tasks to Executors
 
-**Cluster manager:** It allocates resources to the worker nodes. The types of managers are standalone, Mesos, Yarn, K8s
+**Cluster manager:** It allocates resources(CPU, memory, storage) to the worker nodes. The types of managers are standalone, Mesos, Yarn, K8s
 
 **Worker Node:** Physical or Virtual machine in the cluster. 
 It's primary role is to provide the environment and resource(CPU, memory, storage) for executors to run.
 
 **Executor:** JVM process launched for spark application. It's primary role is to execute tasks from the Driver.
 
-**Slots:** Fancy name for cores on the executor. Typically 1 slot<--->1 task<--->1 partition. 
+**Slots:** Fancy name for executor cores. Typically 1 slot<--->1 task<--->1 partition. 
 So If I have 4 executors with 4 slots, I can run 16 tasks in parallel
 
 #### Executor memory Breakdown
@@ -40,7 +40,7 @@ Reserved memory is used to prevent OOM issues.
 
 ![img_1.png](Job_Stage_Task.png)
 
-**Transformation:** Operations like filter, select, join, groupBy.
+**Transformation:** Operations like filter, select, join, groupBy. They are "lazy", and will not execute until a spark action is invoked.
 * Narrow Transformations: Transformations that each input partition contributes to only one output partition. Generally more efficient and faster.
 * Wide Transformations: Transformations where input data from multiple partitions may be combined to produce each output partition. This means they require
 a shuffle, which involves disk I/O, network I/O, and serialization/deserialization of the data.
@@ -63,7 +63,7 @@ an individual stage. A stage has multiple tasks that can be executed in parallel
 **Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition.
 
 
-## Performance bottlnecks
+## Performance bottlenecks
 
 I/O caused by:
 

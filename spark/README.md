@@ -17,10 +17,10 @@ Transformations occur in-memory, making it faster than MapReduce.
 
 **Cluster manager:** It allocates resources(CPU, memory, storage) to the worker nodes and driver node. The types of managers are standalone, Mesos, Yarn, K8s
 
-**Worker Node:** Physical or Virtual machine in the cluster. 
-It's primary role is to provide the environment and resource(CPU, memory, storage) for executors to run.
+**Worker Node:** Physical or Virtual machine in the cluster that provides the environment and resource(CPU, memory, storage) 
+for executors to run.
 
-**Executor:** JVM process launched for spark application. It's primary role is to execute tasks from the Driver.
+**Executor:** JVM process that executes tasks assigned by the Driver.
 
 **Slots:** Fancy name for executor cores. Typically 1 slot<--->1 task<--->1 partition. 
 So If I have 4 executors with 4 slots, I can run 16 tasks in parallel
@@ -28,7 +28,7 @@ So If I have 4 executors with 4 slots, I can run 16 tasks in parallel
 #### Executor memory Breakdown
 ![Executor-memory-breakdown.svg](Executor-memory-breakdown.svg)
 
-Executor memory stores temporary data used for shuffles, joins, sorts, aggregations. If data exceeds memory, it will spill onto disk.
+Execution memory stores temporary data used for shuffles, joins, sorts, aggregations. If data exceeds memory, it will spill onto disk.
 
 Storage memory is used for cached data, broadcasts.
 
@@ -45,9 +45,7 @@ Reserved memory is used to prevent OOM issues.
 * Wide Transformations: Transformations where input data from multiple partitions may be combined to produce each output partition. This means they require
 a shuffle, which involves disk I/O, network I/O, and serialization/deserialization of the data.
 
-**Action:** Operations like save, show, and count. Once an action is invoked, Spark will take transformations to create an optimized 
-Directed Acyclic Graph (DAG). This DAG is then divided into multiple Jobs, Stages, and Tasks. 
-The code is executed accordingly, with the result either being returned to the Driver or written to disk.
+**Action:** Operations like save, show, and count. Once an action is invoked, Spark will evaluate the lineage of transformations that were lazily stored.
 
 **Logical Plan:** Each transformation builds upon a logical plan, a tree of logical operations and high level abstraction
 of what the user wants to do. After the plan is constructed the catalyst optimizer creates logical optimized plan
@@ -60,7 +58,8 @@ The driver will break it down into one or more jobs.
 **Stage:** Each stage contains a sequence of transformations that can be completed without shuffling, shuffles mark the boundary of 
 an individual stage. A stage has multiple tasks that can be executed in parallel
 
-**Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition.
+**Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition. 
+ Once all tasks are complete for the job, the final result will be returned to the Driver or written to disk.
 
 
 ## Performance bottlenecks

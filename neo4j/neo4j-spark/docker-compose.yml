@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  spark:
+    image: docker.io/bitnami/spark:3.3
+    environment:
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+    ports:
+      - '8080:8080'
+      - '4040:4040'
+      - '7077:7077'
+  neo4j:
+    image: docker.io/neo4j:5.13.0-enterprise
+    ports:
+      - "7474:7474" # Neo4j Web UI
+      - "7687:7687" # Bolt port
+    environment:
+      - NEO4J_AUTH=none # Disables authentication, only use for Development

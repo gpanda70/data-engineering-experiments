@@ -34,7 +34,7 @@ Storage memory is used for cached data, broadcasts.
 
 Reserved memory is used to prevent OOM issues.
 
-### Logical
+### Execution Engine
 
 ![img.png](dag_to_job_stage_task.png)
 

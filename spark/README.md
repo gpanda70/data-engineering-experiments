@@ -40,7 +40,7 @@ Reserved memory is used to prevent OOM issues.
 
 ![img_1.png](Job_Stage_Task.png)
 
-**Transformation:** Operations like filter, select, join, groupBy. They are "lazy", and will not execute until a spark action is invoked.
+**Transformation:** Operations like filter, select, join, groupBy. They are "lazy" and will not execute until a spark action is invoked.
 * Narrow Transformations: Transformations that each input partition contributes to only one output partition. Generally more efficient and faster.
 * Wide Transformations: Transformations where input data from multiple partitions may be combined to produce each output partition. This means they require
 a shuffle, which involves disk I/O, network I/O, and serialization/deserialization of the data.
@@ -48,15 +48,14 @@ a shuffle, which involves disk I/O, network I/O, and serialization/deserializati
 **Action:** Operations like save, show, and count. Once an action is invoked, Spark will evaluate the lineage of transformations that were lazily stored.
 
 **Logical Plan:** Each transformation builds upon a logical plan, a tree of logical operations and high level abstraction
-of what the user wants to do. After the plan is constructed the catalyst optimizer creates logical optimized plan
+of what the user wants to do. After the plan is constructed, the catalyst optimizer creates a logical optimized plan (filter pushdowns, etc...)
 
 **Physical Plan:** How the optimized logical plan will be executed in the cluster. It is represented as a DAG. 
-The driver will break it down into one or more jobs. 
 
 **Job:** Represents the entire computation required to produce results for an action. A job consists of 1 or more stages.
 
 **Stage:** Each stage contains a sequence of transformations that can be completed without shuffling, shuffles mark the boundary of 
-an individual stage. A stage has multiple tasks that can be executed in parallel
+an individual stage. A stage has multiple tasks that can be executed in parallel.
 
 **Task:** A unit of work that will be performed by the executor and corresponds to 1 slot and 1 partition. 
  Once all tasks are complete for the job, the final result will be returned to the Driver or written to disk.

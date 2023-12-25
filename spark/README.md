@@ -11,7 +11,7 @@ Transformations occur in-memory, making it faster than MapReduce.
 ## High-Level Architecture
 
 ### Cluster
-![spark physical architecture.svg](spark%20physical%20architecture.svg)
+![spark_physical_architecture.svg](README_images/spark_physical_architecture.svg)
 
 **Driver:** The entrypoint to the cluster that does the following: converts spark code to tasks, assigns tasks to Executors, handles task failures, and returns result to client. 
 
@@ -26,7 +26,7 @@ for executors to run.
 So If I have 4 executors with 4 slots, I can run 16 tasks in parallel
 
 #### Executor memory Breakdown
-![Executor-memory-breakdown.svg](Executor-memory-breakdown.svg)
+![executor_memory_breakdown.svg](README_images/executor_memory_breakdown.svg)
 
 Execution memory stores temporary data used for shuffles, joins, sorts, aggregations. If data exceeds memory, it will spill onto disk.
 
@@ -36,9 +36,9 @@ Reserved memory is used to prevent OOM issues.
 
 ### Execution Engine
 
-![img.png](dag_to_job_stage_task.png)
+![dag_to_job_stage_task.png](README_images/dag_to_job_stage_task.png)
 
-![img_1.png](Job_Stage_Task.png)
+![job_stage_task.png](README_images/job_stage_task.png)
 
 **Transformation:** Operations like filter, select, join, groupBy. They are "lazy" and will not execute until a spark action is invoked.
 * Narrow Transformations: Transformations that each input partition contributes to only one output partition. Generally more efficient and faster.

@@ -59,11 +59,11 @@ if __name__ == "__main__":
     index_name = "example"
     create_index_if_not_exists(client, index_name)
 
-    # doc1 = Document(
-    #    "example",
-    #    "1",
-    #    {"title": "Moneyball", "director": "Bennett Miller", "year": 2011},
-    # )
+    doc1 = Document(
+        "example",
+        "1",
+        {"title": "Moneyball", "director": "Bennett Miller", "year": 2011},
+    )
 
-    # print("Document Ingestion starting")
-    # ingest_documents(client, doc1)
+    print("Document Ingestion starting")
+    ingest_documents(client, doc1)

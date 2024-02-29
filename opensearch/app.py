@@ -1,5 +1,5 @@
 import os
-from typing import NamedTuple, Dict
+from typing import NamedTuple, Dict, List
 
 from dotenv import load_dotenv
 from opensearchpy import OpenSearch
@@ -16,6 +16,7 @@ def create_client() -> OpenSearch:
     port = 9200
     load_dotenv()
     auth = ("admin", os.getenv("OPENSEARCH_PWD"))
+    print("Client is being initialized")
     client = OpenSearch(
         hosts=[{"host": host, "port": port}],
         http_compress=True,
@@ -25,6 +26,7 @@ def create_client() -> OpenSearch:
         ssl_assert_hostname=False,
         ssl_show_warn=False,
     )
+    print("Client is initialized")
     return client
 
 
@@ -36,25 +38,26 @@ def create_index_if_not_exists(client: OpenSearch, index_name: str):
         else:
             print(f"Index '{index_name}' already exists.")
     except Exception as e:
-        print(f"error occured: {e}")
+        print(f"error occurred: {e}")
 
 
-def ingest_documents(client: OpenSearch, document: Document):
+def ingest_document(client: OpenSearch, document: Document):
+    print("Document ingestion has started")
     response = client.index(
         index=document.opensearch_index,
         body=document.body,
         id=document.id,
     )
+    print("Document ingestion has completed")
     return response
 
 
-def bulk_ingest_documents():
+def bulk_ingest_documents(client: OpenSearch, documents: List[Document]):
     pass
 
 
 if __name__ == "__main__":
     client = create_client()
-    print("client created")
 
     index_name = "example"
     create_index_if_not_exists(client, index_name)
@@ -65,5 +68,4 @@ if __name__ == "__main__":
         {"title": "Moneyball", "director": "Bennett Miller", "year": 2011},
     )
 
-    print("Document Ingestion starting")
-    ingest_documents(client, doc1)
+    ingest_document(client, doc1)

@@ -1,14 +1,42 @@
 import os
-from typing import NamedTuple, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, List
 
 from dotenv import load_dotenv
-from opensearchpy import OpenSearch
+from opensearchpy import OpenSearch, helpers
 
 
-class Document(NamedTuple):
-    opensearch_index: str
-    id: str
+class BulkOperationType(Enum):
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+    INDEX = "index"
+
+
+@dataclass
+class Document:
     body: Dict[str, str | int]
+    index: str = field(metadata={"name": "_index"})
+    id: str = field(metadata={"name": "_id"})
+
+    def to_bulk_dict(self, op_type: BulkOperationType) -> Dict:
+        """
+        Prepares the document for bulk ingestion in OpenSearch by flattening the body
+        and including '_index' and '_id' at the top level, excluding 'body' as a key.
+        """
+        # Directly create the action/metadata dict
+        bulk_dict = {
+            "_op_type": op_type,
+            "_id": self.id,
+            "_index": self.index
+        }
+
+        # Merge the contents of the body into the bulk_dict, flattening it
+        bulk_dict.update(self.body)
+        print(bulk_dict)
+
+        return bulk_dict
 
 
 def create_client() -> OpenSearch:
@@ -44,7 +72,7 @@ def create_index_if_not_exists(client: OpenSearch, index_name: str):
 def ingest_document(client: OpenSearch, document: Document):
     print("Document ingestion has started")
     response = client.index(
-        index=document.opensearch_index,
+        index=document.index,
         body=document.body,
         id=document.id,
     )
@@ -52,8 +80,27 @@ def ingest_document(client: OpenSearch, document: Document):
     return response
 
 
-def bulk_ingest_documents(client: OpenSearch, documents: List[Document]):
-    pass
+def bulk_ingest_documents(client: OpenSearch, documents: List[Document],
+                          op_type: BulkOperationType = BulkOperationType.INDEX):
+    """
+    The bulk ingestion lets you upload multiple documents in a single request leading to significant
+    performance benefits.
+
+    Each document in the `documents` list is associated with an action indicating how it should be processed.
+    Supported actions are:
+    - CREATE: Add a new document. Fails if a document with the same ID already exists.
+    - INDEX: Adds a new document or replaces an existing document with the same ID.
+    - DELETE: Removes a document from the index.
+    - UPDATE: Updates an existing document with new data.
+    :param client: The OpenSearch client instance used to connect to the database.
+    :param documents: A list of document objects to be ingested
+    :param op_type: Type of bulk operation
+    :return:
+    """
+    documents_dict = [doc.to_bulk_dict(op_type) for doc in documents]
+    print(documents_dict)
+    response = helpers.bulk(client, documents_dict, max_retries=3)
+    return response
 
 
 if __name__ == "__main__":
@@ -63,9 +110,14 @@ if __name__ == "__main__":
     create_index_if_not_exists(client, index_name)
 
     doc1 = Document(
-        "example",
-        "1",
         {"title": "Moneyball", "director": "Bennett Miller", "year": 2011},
+        "example",
+        "1"
+    )
+    doc2 = Document(
+        {"title": "Dark Knight Rises", "director": "Christopher Nolan", "year": 2012},
+        "example",
+        "2"
     )
 
-    ingest_document(client, doc1)
+    bulk_ingest_documents(client, [doc1, doc2])
